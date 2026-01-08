@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Japanese Voice Samples</title>
+<title>Voice Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -13,7 +13,7 @@ body {
     color: white;
 }
 
-/* Top bar */
+/* ───────── NAV ───────── */
 .nav {
     display: flex;
     gap: 30px;
@@ -24,14 +24,15 @@ body {
     color: white;
     text-decoration: none;
     opacity: 0.6;
+    cursor: pointer;
 }
 
-.nav .active {
+.nav a.active {
     opacity: 1;
     border-bottom: 2px solid #FCB3FF;
 }
 
-/* Grid */
+/* ───────── GRID ───────── */
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -46,7 +47,7 @@ body {
     cursor: pointer;
 }
 
-/* Fullscreen viewer */
+/* ───────── VIEWER ───────── */
 .viewer {
     position: fixed;
     inset: 0;
@@ -82,11 +83,10 @@ body {
     background: url("overlay.png") center/cover no-repeat;
 }
 
-/* Character info (STEP 6) */
+/* ───────── INFO ───────── */
 #info {
     z-index: 5;
     text-align: center;
-    margin-bottom: 120px;
 }
 
 #charName {
@@ -97,15 +97,14 @@ body {
 #charRole {
     font-size: 18px;
     opacity: 0.8;
-    margin: 6px 0 0;
+    margin-top: 6px;
 }
 
-/* Controls */
+/* ───────── CONTROLS ───────── */
 .play {
-    z-index: 5;
     font-size: 80px;
-    cursor: pointer;
     margin-top: 40px;
+    cursor: pointer;
 }
 
 .arrow {
@@ -119,7 +118,7 @@ body {
 .left { left: 30px; }
 .right { right: 30px; }
 
-/* Audio bar */
+/* ───────── AUDIO ───────── */
 audio {
     position: absolute;
     bottom: 40px;
@@ -134,37 +133,41 @@ audio {
     opacity: 1;
 }
 
-/* STEP 8 — Mobile optimizations */
+/* ───────── RETURN ───────── */
+.return {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* ───────── MOBILE ───────── */
 @media (max-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .play {
-        font-size: 60px;
-    }
-
-    .arrow {
-        font-size: 40px;
-    }
-
-    #charName {
-        font-size: 24px;
-    }
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .play { font-size: 60px; }
+    .arrow { font-size: 40px; }
+    #charName { font-size: 24px; }
 }
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <div class="nav">
     <a href="index.html">Home</a>
-    <a class="active">Japanese</a>
-    <a href="english.html">English</a>
-    <a href="arabic.html">Arabic</a>
+    <a class="lang-btn active" data-lang="jp">Japanese</a>
+    <a class="lang-btn" data-lang="en">English</a>
+    <a class="lang-btn" data-lang="ar">Arabic</a>
 </div>
 
-<div class="grid">
+<!-- JAPANESE -->
+<div class="grid lang-grid" data-lang="jp">
     <div class="card"
         style="background-image:url('soshi ushikai.png')"
         data-image="soshi ushikai.png"
@@ -182,28 +185,47 @@ audio {
     </div>
 </div>
 
-<!-- Viewer -->
+<!-- ENGLISH -->
+<div class="grid lang-grid" data-lang="en" style="display:none"></div>
+
+<!-- ARABIC -->
+<div class="grid lang-grid" data-lang="ar" style="display:none"></div>
+
+<!-- VIEWER -->
 <div class="viewer" id="viewer">
     <div class="viewer-bg" id="viewerBg"></div>
     <div class="viewer-overlay"></div>
 
-    <!-- Return Button -->
     <div class="return" onclick="closeViewer()">← Back</div>
-
     <div class="arrow left" onclick="prev()">❮</div>
 
     <div id="info">
         <h2 id="charName"></h2>
         <p id="charRole"></p>
-        <div class="play" onclick="play()">▶</div>
+        <div class="play" onclick="togglePlay()">▶</div>
     </div>
 
     <div class="arrow right" onclick="next()">❯</div>
-
     <audio id="audio" controls></audio>
 </div>
 
 <script>
+/* ───────── LANGUAGE SWITCH ───────── */
+const langBtns = document.querySelectorAll(".lang-btn");
+const grids = document.querySelectorAll(".lang-grid");
+
+langBtns.forEach(btn => {
+    btn.onclick = () => {
+        langBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        grids.forEach(g => {
+            g.style.display = g.dataset.lang === btn.dataset.lang ? "grid" : "none";
+        });
+    };
+});
+
+/* ───────── VIEWER LOGIC ───────── */
 const cards = document.querySelectorAll(".card");
 const viewer = document.getElementById("viewer");
 const bg = document.getElementById("viewerBg");
@@ -211,24 +233,21 @@ const audio = document.getElementById("audio");
 
 let index = 0;
 
-cards.forEach((c, i) => {
-    c.onclick = () => openSample(i);
-});
+cards.forEach((c, i) => c.onclick = () => openSample(i));
 
 function openSample(i) {
     index = i;
     audio.pause();
+    audio.currentTime = 0;
     audio.src = cards[i].dataset.audio;
     bg.style.backgroundImage = `url('${cards[i].dataset.image}')`;
-
-    document.getElementById("charName").textContent = cards[i].dataset.name;
-    document.getElementById("charRole").textContent = cards[i].dataset.role;
-
+    charName.textContent = cards[i].dataset.name;
+    charRole.textContent = cards[i].dataset.role;
     viewer.classList.add("active");
 }
 
-function play() {
-    audio.play();
+function togglePlay() {
+    audio.paused ? audio.play() : audio.pause();
 }
 
 function next() {
@@ -244,40 +263,30 @@ function closeViewer() {
     viewer.classList.remove("active");
 }
 
-/* Return Button */
-.return {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 10;
-    transition: background-color 0.3s;
-}
-
-.return:hover {
-    background-color: rgba(0, 0, 0, 0.7);
-}
-    
+/* ───────── KEYBOARD ───────── */
 document.addEventListener("keydown", e => {
     if (!viewer.classList.contains("active")) return;
-
     if (e.key === "ArrowRight") next();
     if (e.key === "ArrowLeft") prev();
+    if (e.key === "Escape") closeViewer();
     if (e.key === " ") {
         e.preventDefault();
-        audio.paused ? audio.play() : audio.pause();
+        togglePlay();
     }
-    if (e.key === "Escape") closeViewer();
 });
 
-viewer.onclick = e => {
-    if (e.target === viewer) closeViewer();
-};
+/* ───────── SWIPE (MOBILE) ───────── */
+let startX = 0;
+
+viewer.addEventListener("touchstart", e => {
+    startX = e.changedTouches[0].screenX;
+});
+
+viewer.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].screenX;
+    if (endX < startX - 50) next();
+    if (endX > startX + 50) prev();
+});
 </script>
 
 </body>
