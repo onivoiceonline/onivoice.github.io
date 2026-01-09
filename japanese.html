@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Voice Portfolio</title>
+<title>Japanese Voice Samples</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,9 +11,10 @@ body {
     font-family: Arial, sans-serif;
     background: #000;
     color: white;
+    overflow-x: hidden;
 }
 
-/* ───────── NAV ───────── */
+/* Nav */
 .nav {
     display: flex;
     gap: 30px;
@@ -23,16 +24,41 @@ body {
 .nav a {
     color: white;
     text-decoration: none;
-    opacity: 0.6;
+    opacity: 0.5;
+    position: relative;
+    padding-bottom: 6px;
     cursor: pointer;
 }
 
 .nav a.active {
     opacity: 1;
-    border-bottom: 2px solid #FCB3FF;
 }
 
-/* ───────── GRID ───────── */
+.nav a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: #FCB3FF;
+}
+
+/* Language animation */
+.lang {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.lang.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Grid */
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -45,9 +71,14 @@ body {
     background-size: cover;
     background-position: center;
     cursor: pointer;
+    transition: transform 0.25s ease;
 }
 
-/* ───────── VIEWER ───────── */
+.card:hover {
+    transform: scale(1.04);
+}
+
+/* Viewer */
 .viewer {
     position: fixed;
     inset: 0;
@@ -56,7 +87,7 @@ body {
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.35s ease;
 }
 
 .viewer.active {
@@ -83,7 +114,18 @@ body {
     background: url("overlay.png") center/cover no-repeat;
 }
 
-/* ───────── INFO ───────── */
+/* Return */
+.return {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+/* Info */
 #info {
     z-index: 5;
     text-align: center;
@@ -96,15 +138,15 @@ body {
 
 #charRole {
     font-size: 18px;
-    opacity: 0.8;
+    opacity: 0.7;
     margin-top: 6px;
 }
 
-/* ───────── CONTROLS ───────── */
+/* Controls */
 .play {
     font-size: 80px;
-    margin-top: 40px;
     cursor: pointer;
+    margin-top: 30px;
 }
 
 .arrow {
@@ -118,7 +160,7 @@ body {
 .left { left: 30px; }
 .right { right: 30px; }
 
-/* ───────── AUDIO ───────── */
+/* Audio */
 audio {
     position: absolute;
     bottom: 40px;
@@ -133,20 +175,7 @@ audio {
     opacity: 1;
 }
 
-/* ───────── RETURN ───────── */
-.return {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 22px;
-    background: rgba(0,0,0,0.6);
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 10;
-}
-
-/* ───────── MOBILE ───────── */
+/* Mobile */
 @media (max-width: 768px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
     .play { font-size: 60px; }
@@ -158,40 +187,36 @@ audio {
 
 <body>
 
-<!-- NAV -->
 <div class="nav">
-    <a href="index.html">Home</a>
-    <a class="lang-btn active" data-lang="jp">Japanese</a>
-    <a class="lang-btn" data-lang="en">English</a>
-    <a class="lang-btn" data-lang="ar">Arabic</a>
+    <a class="active" data-lang="jp">Japanese</a>
+    <a data-lang="en">English</a>
+    <a data-lang="ar">Arabic</a>
 </div>
 
-<!-- JAPANESE -->
-<div class="grid lang-grid" data-lang="jp">
-    <div class="card"
-        style="background-image:url('soshi ushikai.png')"
-        data-image="soshi ushikai.png"
-        data-audio="soshi ushikai.mp3"
-        data-name="Soshi Ushikai"
-        data-role="Narration / RPG">
-    </div>
+<div class="lang active" id="jp">
+    <div class="grid">
+        <div class="card"
+            style="background-image:url('soshi ushikai.png')"
+            data-image="soshi ushikai.png"
+            data-audio="soshi ushikai.mp3"
+            data-name="Soshi Ushikai"
+            data-role="Narration / RPG">
+        </div>
 
-    <div class="card"
-        style="background-image:url('kisho himura.png')"
-        data-image="kisho himura.png"
-        data-audio="Kisho Himura.mp3"
-        data-name="Kisho Himura"
-        data-role="Anime / Action">
+        <div class="card"
+            style="background-image:url('kisho himura.png')"
+            data-image="kisho himura.png"
+            data-audio="Kisho Himura.mp3"
+            data-name="Kisho Himura"
+            data-role="Anime / Action">
+        </div>
     </div>
 </div>
 
-<!-- ENGLISH -->
-<div class="grid lang-grid" data-lang="en" style="display:none"></div>
+<div class="lang" id="en"></div>
+<div class="lang" id="ar"></div>
 
-<!-- ARABIC -->
-<div class="grid lang-grid" data-lang="ar" style="display:none"></div>
-
-<!-- VIEWER -->
+<!-- Viewer -->
 <div class="viewer" id="viewer">
     <div class="viewer-bg" id="viewerBg"></div>
     <div class="viewer-overlay"></div>
@@ -202,7 +227,7 @@ audio {
     <div id="info">
         <h2 id="charName"></h2>
         <p id="charRole"></p>
-        <div class="play" onclick="togglePlay()">▶</div>
+        <div class="play" id="playBtn" onclick="togglePlay()">▶</div>
     </div>
 
     <div class="arrow right" onclick="next()">❯</div>
@@ -210,27 +235,25 @@ audio {
 </div>
 
 <script>
-/* ───────── LANGUAGE SWITCH ───────── */
-const langBtns = document.querySelectorAll(".lang-btn");
-const grids = document.querySelectorAll(".lang-grid");
+/* Language switching */
+const tabs = document.querySelectorAll(".nav a");
+const langs = document.querySelectorAll(".lang");
 
-langBtns.forEach(btn => {
-    btn.onclick = () => {
-        langBtns.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        grids.forEach(g => {
-            g.style.display = g.dataset.lang === btn.dataset.lang ? "grid" : "none";
-        });
+tabs.forEach(tab => {
+    tab.onclick = () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        langs.forEach(l => l.classList.remove("active"));
+        document.getElementById(tab.dataset.lang).classList.add("active");
     };
 });
 
-/* ───────── VIEWER LOGIC ───────── */
-const cards = document.querySelectorAll(".card");
+/* Viewer */
 const viewer = document.getElementById("viewer");
 const bg = document.getElementById("viewerBg");
 const audio = document.getElementById("audio");
-
+const playBtn = document.getElementById("playBtn");
+let cards = document.querySelectorAll("#jp .card");
 let index = 0;
 
 cards.forEach((c, i) => c.onclick = () => openSample(i));
@@ -239,54 +262,68 @@ function openSample(i) {
     index = i;
     audio.pause();
     audio.currentTime = 0;
+    playBtn.textContent = "▶";
+
     audio.src = cards[i].dataset.audio;
     bg.style.backgroundImage = `url('${cards[i].dataset.image}')`;
+
     charName.textContent = cards[i].dataset.name;
     charRole.textContent = cards[i].dataset.role;
+
     viewer.classList.add("active");
 }
 
 function togglePlay() {
-    audio.paused ? audio.play() : audio.pause();
+    if (audio.paused) {
+        audio.play();
+        playBtn.textContent = "❚❚";
+    } else {
+        audio.pause();
+        playBtn.textContent = "▶";
+    }
 }
 
-function next() {
-    openSample((index + 1) % cards.length);
-}
+audio.onended = () => playBtn.textContent = "▶";
 
-function prev() {
-    openSample((index - 1 + cards.length) % cards.length);
-}
+function next() { openSample((index + 1) % cards.length); }
+function prev() { openSample((index - 1 + cards.length) % cards.length); }
 
 function closeViewer() {
     audio.pause();
     viewer.classList.remove("active");
+    playBtn.textContent = "▶";
 }
 
-/* ───────── KEYBOARD ───────── */
+/* Keyboard */
 document.addEventListener("keydown", e => {
     if (!viewer.classList.contains("active")) return;
     if (e.key === "ArrowRight") next();
     if (e.key === "ArrowLeft") prev();
     if (e.key === "Escape") closeViewer();
-    if (e.key === " ") {
-        e.preventDefault();
-        togglePlay();
-    }
 });
 
-/* ───────── SWIPE (MOBILE) ───────── */
+/* ===== MOBILE SWIPE ===== */
 let startX = 0;
+let endX = 0;
 
 viewer.addEventListener("touchstart", e => {
     startX = e.changedTouches[0].screenX;
-});
+}, { passive: true });
 
 viewer.addEventListener("touchend", e => {
-    const endX = e.changedTouches[0].screenX;
-    if (endX < startX - 50) next();
-    if (endX > startX + 50) prev();
-});
+    endX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    if (!viewer.classList.contains("active")) return;
+    const diff = startX - endX;
+
+    if (Math.abs(diff) < 50) return;
+
+    if (diff > 0) next();   // swipe left
+    else prev();            // swipe right
+}
 </script>
 
 </body>
